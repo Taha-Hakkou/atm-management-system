@@ -71,6 +71,7 @@ void initMenu(struct User *u)
             loginMenu(u->name, u->password);
             if (strcmp(u->password, getPassword(*u)) == 0)
             {
+                // login not working for alice (resolved in getPassword)
                 printf("\n\nPassword Match!");
             }
             else
@@ -82,7 +83,20 @@ void initMenu(struct User *u)
             break;
         case 2:
             // student TODO : add your **Registration** function
-            // here
+            registerMenu(u->name, u->password);
+            if (doesUserExist(*u))
+            {
+                // check if username exists
+                printf("\n\nusername exists!");
+                exit(1);
+            }
+            // + check if password is valid
+            else
+            {
+                addUserToFile(*u);
+                printf("\nUser created successfully!\n");
+            }
+            // **********
             r = 1;
             break;
         case 3:

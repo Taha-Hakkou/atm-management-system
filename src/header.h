@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 struct Date
 {
@@ -33,6 +34,10 @@ struct User
 void loginMenu(char a[50], char pass[50]);
 void registerMenu(char a[50], char pass[50]);
 const char *getPassword(struct User u);
+//
+bool doesUserExist(struct User u);
+void addUserToFile(struct User u);
+int countUsers();
 
 // system function
 void createNewAcc(struct User u);
