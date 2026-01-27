@@ -163,3 +163,47 @@ void checkAllAccounts(struct User u)
     fclose(pf);
     success(u);
 }
+
+///////////////////////////////////////// My functions
+
+void updateAccount(struct User u) {
+    int accountId, option;
+    char username[100];
+    struct Record r;
+
+    FILE *ofp = fopen(RECORDS, "r");
+    FILE *nfp = fopen("./data/.records.txt.tmp", "w");
+
+    system("clear");
+    printf("\t\t====== Update account info =====\n\n\t\tAccount ID:");
+    scanf("%d", &accountId); // check if not a number OR if id not found
+    while (getAccountFromFile(ofp, username, &r)) // username not needed
+    {
+        if (r.id == accountId) {
+            // process only one because records are accounts, unless it means transactions
+            // prompt to choose either phone number or country
+            printf("\n\t\t[1]- Phone Number\n");
+            printf("\n\t\t[2]- Country\n");
+            scanf("%d", &option);
+            switch (option)
+            {
+            case 1:
+                printf("\n\t\tPhone Number:");
+                scanf("%d", &r.phone); // check if number
+                break;
+            case 2:
+                printf("\n\t\tCountry:");
+                scanf("%s", r.country); // check if number
+                break;
+            default:
+                printf("Invalid choice!\n");
+            }
+        }
+        saveAccountToFile(nfp, u, r);
+        // if it stops, the temp file must be deleted !!!
+    }
+    fclose(ofp);
+    fclose(nfp);
+    rename("./data/.records.txt.tmp", RECORDS); // check return value
+    success(u);
+}

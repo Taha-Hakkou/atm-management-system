@@ -23,7 +23,11 @@ void mainMenu(struct User u)
         break;
     case 2:
         // student TODO : add your **Update account information** function
-        // here
+        // The Update information of existing account feature, users must be able to update their country or phone number.
+        // 2.1. You must ask users to input the account id they want to change, followed by a prompt asking which field they want to also change (the only fields that are permitted to update is the phone number and the country).
+        // 2.2. Whenever users update an account, it must be saved into the corresponding file.
+        updateAccount(u);
+        // ********************************
         break;
     case 3:
         // student TODO : add your **Check the details of existing accounts** function
@@ -93,7 +97,7 @@ void initMenu(struct User *u)
             // + check if password is valid
             else
             {
-                addUserToFile(*u);
+                saveUserToFile(*u);
                 printf("\nUser created successfully!\n");
             }
             // **********

@@ -57,3 +57,4 @@ dkms.conf
 
 # project-specific ignored files
 atm
+./data/.records.txt.tmp

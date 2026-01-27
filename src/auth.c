@@ -91,6 +91,8 @@ const char *getPassword(struct User u)
     return "no user found";
 }
 
+///////////////////////////////////////// My functions
+
 bool doesUserExist(struct User u) // const ? + better to take only username and not all user
 {
     FILE *fp;
@@ -115,8 +117,9 @@ bool doesUserExist(struct User u) // const ? + better to take only username and 
     return false;
 }
 
-void addUserToFile(struct User u)
+void saveUserToFile(struct User u)
 {
+    // can i do it like save account ?
     FILE *fp;
     int id;
 

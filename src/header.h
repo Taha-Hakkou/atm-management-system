@@ -19,8 +19,8 @@ struct Record
     char accountType[10];
     int accountNbr;
     double amount;
-    struct Date deposit;
-    struct Date withdraw;
+    struct Date deposit; // should i consider it as date of creation ?
+    struct Date withdraw; // ignored ?
 };
 
 struct User
@@ -29,6 +29,7 @@ struct User
     char name[50];
     char password[50];
 };
+
 
 // authentication functions
 void loginMenu(char a[50], char pass[50]);
@@ -39,7 +40,10 @@ bool doesUserExist(struct User u);
 void addUserToFile(struct User u);
 int countUsers();
 
+
 // system function
 void createNewAcc(struct User u);
 void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
+//
+void updateAccount(struct User u);
