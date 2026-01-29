@@ -37,7 +37,7 @@ void registerMenu(char a[50], char pass[50]);
 const char *getPassword(struct User u);
 //
 bool doesUserExist(struct User u);
-void addUserToFile(struct User u);
+void saveUserToFile(struct User u);
 int countUsers();
 
 
@@ -47,3 +47,11 @@ void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
 //
 void updateAccount(struct User u);
+void checkAccount(struct User u);
+
+
+//
+struct AccType {
+    char type[8];
+    int interest; // percent
+};

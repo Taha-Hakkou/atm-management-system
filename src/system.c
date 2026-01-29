@@ -166,6 +166,9 @@ void checkAllAccounts(struct User u)
 
 ///////////////////////////////////////// My functions
 
+// The Update information of existing account feature, users must be able to update their country or phone number.
+// 2.1. You must ask users to input the account id they want to change, followed by a prompt asking which field they want to also change (the only fields that are permitted to update is the phone number and the country).
+// 2.2. Whenever users update an account, it must be saved into the corresponding file.
 void updateAccount(struct User u) {
     int accountId, option;
     char username[100];
@@ -177,9 +180,9 @@ void updateAccount(struct User u) {
     system("clear");
     printf("\t\t====== Update account info =====\n\n\t\tAccount ID:");
     scanf("%d", &accountId); // check if not a number OR if id not found
-    while (getAccountFromFile(ofp, username, &r)) // username not needed
+    while (getAccountFromFile(ofp, username, &r))
     {
-        if (r.id == accountId) {
+        if (r.id == accountId && strcmp(username, u.name) == 0) {
             // process only one because records are accounts, unless it means transactions
             // prompt to choose either phone number or country
             printf("\n\t\t[1]- Phone Number\n");
@@ -205,5 +208,75 @@ void updateAccount(struct User u) {
     fclose(ofp);
     fclose(nfp);
     rename("./data/.records.txt.tmp", RECORDS); // check return value
+    success(u);
+}
+
+
+// The Checking the details of existing accounts feature, users must be able to check just one account at a time.
+// 3.1. For this they must be asked to input the account id they want to see
+// 3.2. If the account is either savings, fixed01, fixed02 and fixed03 the system will display the information of that account and the interest you will acquire depending on the account:
+// savings: interest rate 7%
+// fixed01(1 year account): interest rate 4%
+// fixed02(2 year account): interest rate 5%
+// fixed03(3 year account): interest rate 8%
+// If the account is current you must display You will not get interests because the account is of type current
+// For example: for an account of type savings with a deposit date of 10/10/2002 and an amount of $1023.20 the system will show "You will get $5.97 as interest on day 10 of every month".
+void checkAccount(struct User u) {
+    int accountId;
+    char username[100];
+    struct Record r;
+
+    struct AccType accountTypes[] = {
+        {"savings", 7},
+        {"fixed01", 4},
+        {"fixed02", 5},
+        {"fixed03", 8}//,
+        //{"current"}
+    };
+
+    FILE *pf = fopen(RECORDS, "r");
+
+    system("clear");
+    printf("\t\t====== Check account info =====\n\n\t\tAccount ID:");
+    scanf("%d", &accountId); // check if not a number OR if id not found !!!!!!!!!!!!!!!!!!!!!!!!!
+    bool found;
+    while (getAccountFromFile(pf, username, &r))
+    {
+        if (r.id == accountId && strcmp(username, u.name) == 0)
+        {
+            printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
+                   r.accountNbr,
+                   r.deposit.day,
+                   r.deposit.month,
+                   r.deposit.year,
+                   r.country,
+                   r.phone,
+                   r.amount,
+                   r.accountType);
+            printf("_____________________\n");
+            if (strcmp(r.accountType, "current") == 0) {
+                printf("You will not get interests because the account is of type current\n");
+                break;
+            }
+            int len = sizeof(accountTypes) / sizeof(accountTypes[0]); // be causious! not always working. why ?
+            int i;
+            for (i = 0; i < len; i++) {
+                if (strcmp(r.accountType, accountTypes[i].type) == 0) {
+                    float mi = r.amount * accountTypes[i].interest / 100 / 12;
+                    printf("\"You will get $%.2f as interest on day %d of every month\"\n", mi, r.deposit.day); // display 2 floating points + round
+                    break;
+                }
+            }
+            if (i == len) {
+                printf("Not a valid account type\n"); // needs better handling
+            }
+            found = true;
+            break;
+        }
+    }
+    if (found == false) {
+        printf("Account ID not found !\n"); // even if found and not permitted user
+    }
+    fclose(pf);
     success(u);
 }
