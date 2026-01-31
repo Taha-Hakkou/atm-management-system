@@ -41,10 +41,12 @@ void mainMenu(struct User u)
         break;
     case 6:
         // student TODO : add your **Remove existing account** function
+        removeAccount(u);
         // here
         break;
     case 7:
         // student TODO : add your **Transfer owner** function
+        transferOwnership(u);
         // here
         break;
     case 8:
@@ -107,6 +109,7 @@ void initMenu(struct User *u)
             break;
         default:
             printf("Insert a valid operation!\n");
+            // either from here or system.c, there is an infinite loop that keeps displaying thie message !!!
         }
     }
 };

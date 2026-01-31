@@ -3,12 +3,12 @@
 const char *RECORDS = "./data/records.txt";
 const char *TRANSACTIONS = "./data/transactions.txt";
 
-int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
+int getAccountFromFile(FILE *ptr, char name[50], struct Record *r) // name not needed
 {
-    return fscanf(ptr, "%d %d %s %d %d/%d/%d %s %d %lf %s",
+    int x = fscanf(ptr, "%d %d %s %d %d/%d/%d %s %d %lf %s",
                   &r->id,
 		          &r->userId,
-		          name,
+		          r->name,
                   &r->accountNbr,
                   &r->deposit.month,
                   &r->deposit.day,
@@ -16,15 +16,19 @@ int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
                   r->country,
                   &r->phone,
                   &r->amount,
-                  r->accountType) != EOF;
+                  r->accountType);
+                  
+    // name = r->name; // not sure about it
+    memcpy(name, r->name, sizeof(r->name)); // needs to be same size !!!!!!!!!!!!!!!!!!!!!!
+    return x != EOF;
 }
 
-void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
+void saveAccountToFile(FILE *ptr, struct User u, struct Record r) // user not needed
 {
     fprintf(ptr, "%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
             r.id, /*&r->id,*/
-	        u.id, /*&u->id*/
-	        u.name, /*&u->name,*/
+	        r.userId, /*&u->id*/
+	        r.name, /*&u->name,*/
             r.accountNbr,
             r.deposit.month,
             r.deposit.day,
@@ -82,16 +86,11 @@ invalid:
     printf("Enter 1 to go to the main menu and 0 to exit!\n");
     scanf("%d", &option);
     system("clear");
-    if (option == 1)
-    {
+    if (option == 1) {
         mainMenu(u);
-    }
-    else if (option == 0)
-    {
+    } else if (option == 0) {
         exit(1);
-    }
-    else
-    {
+    } else {
         printf("Insert a valid operation!\n");
         goto invalid;
     }
@@ -366,4 +365,111 @@ void makeTransaction(struct User u) {
     fclose(tfp);
     rename("./data/.records.txt.tmp", RECORDS); // check return value
     success(u);
+}
+
+// 5. The Remove existing account feature, users must be able to delete their own account, the same must happen here, updates must be saved into the corresponding file.
+void removeAccount(struct User u) {
+    // when deleting an account:
+    // . based on id or account type
+    // . needs confirmation (use option)
+    // . should delete all logs ?
+    // . 
+
+    int accountId;
+    char option[3];
+    char username[100];
+    struct Record r;
+
+    FILE *ofp = fopen(RECORDS, "r");
+    FILE *nfp = fopen("./data/.records.txt.tmp", "w");
+
+    system("clear");
+    printf("\t\t====== Remove account =====\n\n\t\tAccount ID:");
+    scanf("%d", &accountId); // check if not a number OR if id not found
+    while (getAccountFromFile(ofp, username, &r))
+    {
+        if (r.id == accountId && strcmp(username, u.name) == 0) {
+            printf("\t\tAre you sure ? [y/N]: ");
+            scanf("%s", option);
+            if (strcmp(option, "y") == 0 || strcmp(option, "yes") == 0) {
+                continue; // skips only that file
+            }
+        }
+        saveAccountToFile(nfp, u, r);
+        // if it stops, the temp file must be deleted !!!
+    }
+    fclose(ofp);
+    fclose(nfp);
+    rename("./data/.records.txt.tmp", RECORDS); // check return value
+    success(u);
+}
+
+
+// 6. The Transfer owner feature, users can transfer their account to another user, by:
+// 6.1. Identifying the account and the user they want to transfer the ownership to
+// 6.2. Saving the information in the corresponding file
+void transferOwnership(struct User u) {
+    // when transferring an account:
+    // . 
+
+    int accountId;
+    char option[3];
+    char username[100];
+    char owner[100];
+    struct Record r;
+    struct User tu;
+    
+
+    FILE *ofp = fopen(RECORDS, "r");
+    FILE *nfp = fopen("./data/.records.txt.tmp", "w");
+
+    FILE *ufp = fopen("./data/users.txt", "r");
+
+    system("clear");
+    printf("\t\t====== Transfer account's ownership =====\n\n\t\tAccount ID:");
+    scanf("%d", &accountId); // check if not a number OR if id not found
+    while (getAccountFromFile(ofp, username, &r)) {
+        if (r.id == accountId && strcmp(username, u.name) == 0) {
+            bool found;
+            printf("\t\tNew owner's Username: ");
+            scanf("%s", owner);
+            while (getUserFromFile(ufp, &tu)) {
+                if (strcmp(owner, tu.name) == 0) {
+                    found = true;
+                    if (strcmp(owner, u.name) == 0) {
+                        printf("\t\tIt's already your's!\n");
+                        break;
+                    }
+                    printf("\t\tAre you sure ? [y/N]: ");
+                    scanf("%s", option);
+                    if (strcmp(option, "y") == 0 || strcmp(option, "yes") == 0) {
+                        r.userId = tu.id;
+                        // r.name = tu.name;
+                        memcpy(r.name, tu.name, sizeof(tu.name)); // need to check
+                        //////////////////////// still not working !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    }
+                    break;
+                }
+            }
+            if (!found) {
+                printf("\t\tNo user found !");
+            }
+            // break;
+        }
+        saveAccountToFile(nfp, u, r);
+        // if it stops, the temp file must be deleted !!!
+    }
+    fclose(ofp);
+    fclose(nfp);
+    fclose(ufp);
+    rename("./data/.records.txt.tmp", RECORDS); // check return value + dont do it if file not even updated
+    success(u);
+}
+
+int getUserFromFile(FILE *ptr, struct User *u)
+{
+    return fscanf(ptr, "%d %s %s",
+                  &u->id,
+		          u->name,
+                  u->password) != EOF;
 }
