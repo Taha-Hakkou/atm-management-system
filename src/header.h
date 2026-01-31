@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 struct Date
 {
@@ -30,6 +31,14 @@ struct User
     char password[50];
 };
 
+struct Transaction {
+    // id int; (not needed for now)
+    // userId
+    int accountId;
+    char operationType[9]; // withdraw | deposit -> may be with enums
+    struct Date date;
+};
+
 
 // authentication functions
 void loginMenu(char a[50], char pass[50]);
@@ -48,6 +57,7 @@ void checkAllAccounts(struct User u);
 //
 void updateAccount(struct User u);
 void checkAccount(struct User u);
+void makeTransaction(struct User u);
 
 
 //

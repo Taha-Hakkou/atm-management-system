@@ -1,6 +1,7 @@
 #include "header.h"
 
 const char *RECORDS = "./data/records.txt";
+const char *TRANSACTIONS = "./data/transactions.txt";
 
 int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 {
@@ -278,5 +279,91 @@ void checkAccount(struct User u) {
         printf("Account ID not found !\n"); // even if found and not permitted user
     }
     fclose(pf);
+    success(u);
+}
+
+
+
+
+
+
+// 4. The Make transaction feature, users must be able to create transactions, withdrawing or depositing money to a certain account. All transactions must be updated and saved into the corresponding file. Accounts of type fixed01, fixed02 and fixed03 are not allowed to make transactions and an error message should be displayed if transactions are attempted with these accounts.
+void makeTransaction(struct User u) {
+    int accountId, option;
+    char username[100];
+    struct Record r;
+    float amout;
+
+    FILE *ofp = fopen(RECORDS, "r");
+    FILE *nfp = fopen("./data/.records.txt.tmp", "w");
+
+    FILE *tfp = fopen(TRANSACTIONS, "a");
+
+    struct tm *t;
+    time_t now;
+
+    system("clear");
+    printf("\t\t====== Make Transaction =====\n\n\t\tAccount ID:");
+    scanf("%d", &accountId); // check if not a number OR if id not found
+    bool found;
+    while (getAccountFromFile(ofp, username, &r))
+    {
+        if (r.id == accountId && strcmp(username, u.name) == 0) {
+            found = true;
+            if (strcmp(r.accountType, "fixed01") == 0 ||
+                strcmp(r.accountType, "fixed02") == 0 ||
+                strcmp(r.accountType, "fixed03") == 0) {
+                printf("Transactions are not permitted on this type of account !");
+                break;
+            }
+            printf("\n\t\t[1]- Withdraw\n");
+            printf("\n\t\t[2]- Deposit\n");
+            scanf("%d", &option);
+            switch (option)
+            {
+            case 1:
+                printf("\n\t\tAmout:");
+                scanf("%f", &amout); // check if float
+                // withdraw amount from account
+                r.amount -= amout;
+                //add transaction
+                now = time(NULL); 
+                t = localtime(&now);
+                fprintf(tfp, "%d %s %d/%d/%d\n",
+                    accountId,
+                    "withdraw",
+                    t->tm_mon+1,
+                    t->tm_mday,
+                    t->tm_year+1900);
+                break;
+            case 2:
+                printf("\n\t\tAmout:");
+                scanf("%f", &amout); // check if float
+                // deposit amount to account
+                r.amount += amout;
+                //add transaction
+                now = time(NULL); 
+                t = localtime(&now);
+                fprintf(tfp, "%d %s %d/%d/%d\n",
+                    accountId,
+                    "deposit",
+                    t->tm_mon+1,
+                    t->tm_mday,
+                    t->tm_year+1900);
+                break;
+            default:
+                printf("Invalid Operation!\n");
+            }
+        }
+        saveAccountToFile(nfp, u, r);
+        // if it stops, the temp file must be deleted !!!
+    }
+    if (found == false) {
+        printf("Account ID not found !\n"); // even if found and not permitted user
+    }
+    fclose(ofp);
+    fclose(nfp);
+    fclose(tfp);
+    rename("./data/.records.txt.tmp", RECORDS); // check return value
     success(u);
 }
