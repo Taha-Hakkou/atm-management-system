@@ -32,3 +32,10 @@
 * The data folder presented above will contain information about the users and their accounts:
     - users.txt (id, name, password)
     - records.txt (id, user_id, user name, account id, date of creation, country, phone nº, balance, type of account)
+
+
+## NCurses
+
+* [ncurses tutorial (3 part series)](https://dev.to/tbhaxor/introduction-to-ncurses-part-1-1bk5)
+
+## valgrind and memory leaks

@@ -12,7 +12,6 @@ cd ncurses-*
 
 # 2. configure local installation (rootless)
 mkdir -p $HOME/local # everything installs into it
-# mkdir -p $HOME/src
 ./configure --prefix=$HOME/local \
             --with-shared \
             --without-debug \
@@ -58,17 +57,17 @@ make install
 
 
 # 6. Reload
-source ~/.zshrc    # or ~/.bashrc
+source ~/.bashrc    # or ~/.zshrc
 
 
 # 7. Verify installation
 ## Check pkg-config
-pkg-config --modversion ncursesw
-pkg-config --cflags ncursesw
-pkg-config --libs ncursesw
+# pkg-config --modversion ncursesw
+# pkg-config --cflags ncursesw
+# pkg-config --libs ncursesw
 
 ## Check library presence
-ls $HOME/local/lib | grep ncurses
+# ls $HOME/local/lib | grep ncurses
 	# You should see:
 	#    libncursesw.so
 	#    libncursesw.a

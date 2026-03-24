@@ -1,124 +1,55 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════╗
+ *   ATM MANAGEMENT SYSTEM — main.c
+ *   Build: make   (or see Makefile)
+ * ╚══════════════════════════════════════════════════════════════╝
+ */
+
+#include "atm.h"
 #include "header.h"
 
-void mainMenu(struct User u)
-{
-    int option;
-    system("clear");
-    printf("\n\n\t\t======= ATM =======\n\n");
-    printf("\n\t\t-->> Feel free to choose one of the options below <<--\n");
-    printf("\n\t\t[1]- Create a new account\n");
-    printf("\n\t\t[2]- Update account information\n");
-    printf("\n\t\t[3]- Check accounts\n");
-    printf("\n\t\t[4]- Check list of owned account\n");
-    printf("\n\t\t[5]- Make Transaction\n");
-    printf("\n\t\t[6]- Remove existing account\n");
-    printf("\n\t\t[7]- Transfer ownership\n");
-    printf("\n\t\t[8]- Exit\n");
-    scanf("%d", &option);
+/* ─── Global definitions ──────────────────────────────────────── */
+Account accounts[MAX_ACCOUNTS];
+Transaction2 transactions[MAX_TRANS];
+int acc_count = 0;
+int trans_count = 0;
+int logged_acc = -1;
+int is_admin = 0;
+int ROWS, COLS;
 
-    switch (option)
+/* ═══════════════════════════════════════════════════════════════ */
+int main(void) {
+    setlocale(LC_ALL, ""); // UTF-8
+    initscr();
+    cbreak();
+    noecho(); // disable all these properties to not corrupt terminal after finish
+    keypad(stdscr, TRUE);
+    curs_set(0); // hides cursor
+    // curs_set(1) restores the cursor to normal. curs_set(0) hides it, curs_set(1) is the default visible cursor, curs_set(2)
+    getmaxyx(stdscr, ROWS, COLS);
+
+    if (!has_colors() || !can_change_color())
     {
-    case 1:
-        createNewAcc(u);
-        break;
-    case 2:
-        // student TODO : add your **Update account information** function
-        updateAccount(u);
-        // ********************************
-        break;
-    case 3:
-        // student TODO : add your **Check the details of existing accounts** function
-        checkAccount(u);
-        // ******************************************************
-        break;
-    case 4:
-        checkAllAccounts(u);
-        break;
-    case 5:
-        // student TODO : add your **Make transaction** function
-        makeTransaction(u);
-        // ********************
-        break;
-    case 6:
-        // student TODO : add your **Remove existing account** function
-        removeAccount(u);
-        // here
-        break;
-    case 7:
-        // student TODO : add your **Transfer owner** function
-        transferOwnership(u);
-        // here
-        break;
-    case 8:
-        exit(1);
-        break;
-    default:
-        printf("Invalid operation!\n");
+        // endwin();
+        teardown();
+        fprintf(stderr, "Terminal does not support colors.\n");
+        return 1;
     }
-};
+    start_color();
+    init_colors();
+    // save_seed_data();
+    screen_welcome();
 
-void initMenu(struct User *u)
-{
-    int r = 0;
-    int option;
-    system("clear");
-    printf("\n\n\t\t======= ATM =======\n");
-    printf("\n\t\t-->> Feel free to login / register :\n");
-    printf("\n\t\t[1]- login\n");
-    printf("\n\t\t[2]- register\n");
-    printf("\n\t\t[3]- exit\n");
-    while (!r)
-    {
-        scanf("%d", &option);
-        switch (option)
-        {
-        case 1:
-            loginMenu(u->name, u->password);
-            if (strcmp(u->password, getPassword(*u)) == 0)
-            {
-                // login not working for alice (resolved in getPassword)
-                printf("\n\nPassword Match!");
-            }
-            else
-            {
-                printf("\nWrong password!! or User Name\n");
-                exit(1);
-            }
-            r = 1;
-            break;
-        case 2:
-            // student TODO : add your **Registration** function
-            registerMenu(u->name, u->password);
-            if (doesUserExist(*u))
-            {
-                // check if username exists
-                printf("\n\nusername exists!");
-                exit(1);
-            }
-            // + check if password is valid
-            else
-            {
-                saveUserToFile(*u);
-                printf("\nUser created successfully!\n");
-            }
-            // **********
-            r = 1;
-            break;
-        case 3:
-            exit(1);
-            break;
-        default:
-            printf("Insert a valid operation!\n");
-            // either from here or system.c, there is an infinite loop that keeps displaying thie message !!!
-        }
-    }
-};
-
-int main()
-{
-    struct User u;
-    
-    initMenu(&u);
-    mainMenu(u);
+    // endwin();
+    teardown();
     return 0;
+}
+
+void teardown(void) {
+    // how to call it even in unintended exit (program crash, segfault ...) ?
+    keypad(stdscr, FALSE); // disable special key translation
+    nocbreak();            // restore normal line-buffered input
+    echo();                // re-enable terminal echo
+    curs_set(1);           // restore cursor visibility
+    endwin();              // hand terminal control back to shell
 }
