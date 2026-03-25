@@ -19,8 +19,8 @@
 
 
 CC      = gcc
-CFLAGS  = -Wall -Wextra -std=c11 -O2
-LIBS    = -lncursesw -lm
+CFLAGS  = -Wall -Wextra -std=c11 -O2 $(shell pkg-config --cflags ncursesw)
+LIBS    = $(shell pkg-config --libs ncursesw) -lm # -lncursesw
 TARGET  = atm_tui
 SRCS    = src/main.c src/ui.c src/screens_customer.c src/auth.c src/system.c
 OBJS    = $(SRCS:.c=.o)
