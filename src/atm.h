@@ -78,7 +78,7 @@ void save_seed_data(void);
 void screen_welcome(void);
 void screen_main_menu(void);
 struct User *screen_login(void);
-void screen_account_dashboard(struct User u);
+void screen_account_dashboard(struct User *u);
 void screen_deposit(void);
 void screen_withdraw(void);
 void screen_transfer(void);

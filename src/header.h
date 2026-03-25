@@ -39,6 +39,8 @@ struct Transaction {
     struct Date date;
 };
 
+struct User *initMenu(void);
+
 
 // authentication functions
 void loginMenu(char a[50], char pass[50]);

@@ -7,7 +7,7 @@
 
 /* ─── Welcome / Splash ───────────────────────────────────────── */
 void screen_welcome(void) {
-    struct User *u;
+    struct User *u = NULL;
 
     screen_reset();
 
@@ -35,7 +35,7 @@ void screen_welcome(void) {
 
     // mainMenu(u);
     // screen_main_menu();
-    screen_account_dashboard(*u);
+    screen_account_dashboard(u);
     return; // 0
 }
 
@@ -60,8 +60,7 @@ void screen_reset(void) {
     refresh();
 }
 
-struct User *initMenu(void)
-{
+struct User *initMenu(void) {
     //  In C, uninitialized pointers contain garbage values — whatever random bytes happen to be at that memory location.
     // The only cases where pointers are automatically NULL/zero: global vars and static vars
     struct User *u = NULL;
@@ -167,15 +166,15 @@ struct User *initMenu(void)
             break;
         }
 
-        // if (u != NULL) {
+        if (u != NULL) {
             return u;
-        // }
+        }
     }
     // return null not recheable
-};
+}
 
 // /* ─── Account Dashboard ──────────────────────────────────────── */
-void screen_account_dashboard(struct User u) {
+void screen_account_dashboard(struct User *u) {
     const char *items[] = {
         // "  ①  Deposit",
         // "  ②  Withdraw",
@@ -209,7 +208,7 @@ void screen_account_dashboard(struct User u) {
         attron(COLOR_PAIR(CP_HEADER) | A_BOLD);
         mvhline(2, 1, ' ', COLS - 2); // why ?
         // mvprintw(1, 3, " Welcome, %s ", a->name);
-        mvprintw(2, 3, " Welcome, %s ", u.name);
+        mvprintw(2, 3, " Welcome, %s ", u->name);
         // mvprintw(1, COLS - 26, " Acc: %s ", a->acc_num);
         attroff(COLOR_PAIR(CP_HEADER) | A_BOLD);
 
@@ -277,7 +276,7 @@ void screen_account_dashboard(struct User u) {
         case '1':
             // screen_deposit();
             // ...
-            createNewAcc(u);
+            createNewAcc(*u); // u
             break;
         case '2':
             // screen_withdraw();
