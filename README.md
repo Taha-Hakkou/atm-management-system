@@ -38,4 +38,8 @@
 
 * [ncurses tutorial (3 part series)](https://dev.to/tbhaxor/introduction-to-ncurses-part-1-1bk5)
 
+## Make
+
+make -f Makefile
+
 ## valgrind and memory leaks
